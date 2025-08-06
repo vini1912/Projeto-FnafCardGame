@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FNAF Card Battle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='images/backgrounds/fundo.png') }}") !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+            background-repeat: no-repeat !important;
+            background-color: #1a1a1a !important;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            cursor: url("{{ url_for('static', filename='cursors/cursor.png') }}"), auto !important;
+        }
+        
+        /* Estilos para a tela de menu animada */
+        #menu-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1900;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            font-family: 'VT323', monospace;
+            color: white;
+            padding: 50px;
+            background-image: url("{{ url_for('static', filename='images/menu_background.png') }}");
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+        
+        .menu-title {
+            font-size: 36px;
+            margin-bottom: 50px;
+            text-align: left;
+            line-height: 1.2;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+            animation: textGlow 2s infinite alternate;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+        
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 20px;
+        }
+        
+        .menu-option {
+            font-size: 24px;
+            margin: 15px 0;
+            cursor: pointer;
+            text-align: left;
+            position: relative;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+        
+        .menu-option:hover {
+            transform: translateZ(20px);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+        }
+        
+        .menu-option.selected {
+            color: white;
+            transform: translateZ(30px) translateX(10px);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+        }
+        
+        .menu-option.selected::before {
+            content: ">>";
+            position: absolute;
+            left: -40px;
+            animation: arrowBlink 1s infinite alternate;
+        }
+        
+        @keyframes arrowBlink {
+            0% { opacity: 0.5; left: -40px; }
+            100% { opacity: 1; left: -35px; }
+        }
+        
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 30px rgba(128, 0, 128, 0.7); }
+        }
+        
+        .version {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .author {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* Efeito de TV estática no fundo */
+        .static-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1901;
+        }
+        
+        /* Efeito de scanlines */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 50%);
+            background-size: 100% 4px;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 1902;
+        }
+        
+        /* Efeito de vinheta */
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 1903;
+        }
+        
+        /* Esconder o jogo principal até que o menu seja concluído */
+        #game-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de menu animada -->
+    <div id="menu-screen">
+        <div class="static-overlay"></div>
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
+        
+        <div class="menu-title">
+            Five<br>
+            Nights<br>
+            at<br>
+            Freddy's
+        </div>
+        <div class="menu-options">
+            <div class="menu-option selected" id="new-game-option">Start</div>
+            <div class="menu-option" id="continue-option"></div>
+        </div>
+        <div class="version">v 1.13</div>
+        <div class="author">©2014 Scott Cawthon</div>
+    </div>
+
+    <!-- Conteúdo principal do jogo -->
+    <div id="game-container">
+        <!-- Tela de carregamento -->
+        <div class="loading" id="loading">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p class="loading-text">Carregando...</p>
+            </div>
+        </div>
+
+        <!-- Cabeçalho do jogo -->
+        <div class="container">
+            <header class="game-header">
+                <h1 class="game-title">Five Night At Freddys Card Game</h1>
+                <button class="control-button" id="rules-button">Regras do Jogo</button>
+            </header>
+
+            <!-- Área principal do jogo -->
+            <main class="game-area">
+                <!-- Indicador de dia/noite -->
+                <div class="day-night-indicator night-indicator" id="dayNightIndicator">
+                    <span id="dayNightIcon">🌙</span>
+                </div>
+
+                <!-- Tabuleiro do jogo -->
+                <div class="game-board">
+                    <!-- Área do computador -->
+                    <div class="computer-area">
+                        <h2 class="area-title">Oponente</h2>
+                        <div class="computer-stats">
+                            <div class="stat">
+                                <span class="stat-label">Vida</span>
+                                <span class="stat-value" id="computer-health">100</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Energia</span>
+                                <span class="stat-value" id="computer-energy">3</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Carta</span>
+                                <span class="stat-value" id="computer-card-name">???</span>
+                            </div>
+                        </div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="computer-health-bar" style="width: 100%;"></div>
+                        </div>
+                        <div class="energy-bar">
+                            <div class="energy-fill" id="computer-energy-bar" style="width: 100%;"></div>
+                        </div>
+                        <div class="cards-container" id="computer-card">
+                            <!-- Carta do computador será exibida aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Área de mensagens do jogo -->
+                    <div class="game-messages" id="game-messages">
+                        <div class="message system">Bem-vindo ao FNAF Card Battle! Selecione uma carta para começar.</div>
+                    </div>
+
+                    <!-- Área do jogador -->
+                    <div class="player-area">
+                        <h2 class="area-title">Seu Personagem</h2>
+                        <div class="player-stats">
+                            <div class="stat">
+                                <span class="stat-label">Vida</span>
+                                <span class="stat-value" id="player-health">100</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Energia</span>
+                                <span class="stat-value" id="player-energy">3</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Turno</span>
+                                <span class="stat-value" id="turn-counter">1</span>
+                            </div>
+                        </div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="player-health-bar" style="width: 100%;"></div>
+                        </div>
+                        <div class="energy-bar">
+                            <div class="energy-fill" id="player-energy-bar" style="width: 100%;"></div>
+                        </div>
+                        <div class="cards-container" id="player-cards">
+                            <!-- Cartas do jogador serão exibidas aqui -->
+                        </div>
+                    </div>
+
+                    <!-- Controles do jogo -->
+                    <div class="game-controls">
+                        <button class="control-button attack" id="attack-button" disabled>Ataque Normal</button>
+                        <button class="control-button special" id="special-button" disabled>Poder Especial</button>
+                        <button class="control-button" id="end-turn-button" disabled>Finalizar Turno</button>
+                        <button class="control-button" id="new-game-button">Novo Jogo</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Modal de regras -->
+        <div class="rules-modal" id="rules-modal">
+            <div class="rules-content">
+                <button class="close-rules" id="close-rules">&times;</button>
+                <h2 class="rules-title">Regras do Jogo</h2>
+                <div class="rules-text">
+                    <h3>Como Jogar</h3>
+                    <p>FNAF Card Battle é um jogo de cartas 1 contra 1 onde você enfrenta o computador usando personagens do universo Five Nights at Freddy's.</p>
+                    
+                    <h3>Objetivo</h3>
+                    <p>Reduzir os pontos de vida do oponente a zero ou ter mais vida que ele após 10 turnos.</p>
+                    
+                    <h3>Mecânicas Principais</h3>
+                    <ul>
+                        <li><strong>Energia:</strong> Cada jogador começa com 3 pontos de energia. Usar um poder especial consome 1 ponto. A energia é recarregada em 1 ponto por turno.</li>
+                        <li><strong>Dia/Noite:</strong> O jogo alterna entre ciclos de dia e noite a cada 3 turnos. Durante a noite, animatrônicos ganham +10% de ataque mas -10% de defesa. Durante o dia, animatrônicos perdem 5% de ataque mas ganham +5% de defesa.</li>
+                        <li><strong>Raridades:</strong> As cartas possuem diferentes raridades (Rara, Épica, Lendária, Mítica) que determinam a força dos personagens.</li>
+                    </ul>
+                    
+                    <h3>Ações</h3>
+                    <ul>
+                        <li><strong>Ataque Normal:</strong> Causa dano baseado no ataque do personagem.</li>
+                        <li><strong>Poder Especial:</strong> Habilidade única de cada personagem que consome 1 ponto de energia.</li>
+                        <li><strong>Finalizar Turno:</strong> Passa a vez para o oponente e recupera 1 ponto de energia.</li>
+                    </ul>
+                    
+                    <h3>Dicas</h3>
+                    <ul>
+                        <li>Escolha personagens que complementem seu estilo de jogo.</li>
+                        <li>Gerencie sua energia com sabedoria.</li>
+                        <li>Preste atenção ao ciclo de dia/noite para maximizar seus ataques.</li>
+                        <li>Cuidado com os jumpscares quando perder!</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de jumpscare -->
+        <div class="jumpscare-modal" id="jumpscare-modal">
+            <img src="" alt="Jumpscare" class="jumpscare-image" id="jumpscare-image">
+            <audio id="jumpscare-sound" src="{{ url_for('static', filename='sounds/jumpscare.mp3') }}"></audio>
+        </div>
+    </div>
+    
+    <!-- Som de fundo -->
+    <audio id="background-music" loop>
+        <source src="{{ url_for('static', filename='sounds/somdefundo.mp3') }}" type="audio/mp3">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <!-- Scripts -->
+    <script>
+        // Script para controlar o menu e o jogo
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuScreen = document.getElementById('menu-screen');
+            const gameContainer = document.getElementById('game-container');
+            const backgroundMusic = document.getElementById('background-music');
+            const newGameOption = document.getElementById('new-game-option');
+            const continueOption = document.getElementById('continue-option');
+            
+            // Mostrar o menu imediatamente
+            menuScreen.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Efeito 3D para os botões do menu
+            const menuOptions = document.querySelectorAll('.menu-option');
+            
+            menuOptions.forEach(option => {
+                option.addEventListener('mouseover', function() {
+                    if (!this.classList.contains('selected')) {
+                        this.style.transform = 'translateZ(20px)';
+                    }
+                });
+                
+                option.addEventListener('mouseout', function() {
+                    if (!this.classList.contains('selected')) {
+                        this.style.transform = 'translateZ(0)';
+                    }
+                });
+            });
+            
+            // Navegação pelo menu com teclado
+            let selectedOption = 0;
+            const menuOptionsArray = [newGameOption, continueOption];
+            
+            document.addEventListener('keydown', function(e) {
+                if (menuScreen.style.display !== 'none') {
+                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        menuOptionsArray[selectedOption].classList.remove('selected');
+                        menuOptionsArray[selectedOption].style.transform = 'translateZ(0)';
+                        
+                        selectedOption = e.key === 'ArrowUp' ? 
+                            (selectedOption > 0 ? selectedOption - 1 : menuOptionsArray.length - 1) : 
+                            (selectedOption < menuOptionsArray.length - 1 ? selectedOption + 1 : 0);
+                        
+                        menuOptionsArray[selectedOption].classList.add('selected');
+                        menuOptionsArray[selectedOption].style.transform = 'translateZ(30px) translateX(10px)';
+                    } else if (e.key === 'Enter') {
+                        startGame();
+                    }
+                }
+            });
+            
+            // Iniciar jogo ao clicar nas opções
+            newGameOption.addEventListener('click', startGame);
+            continueOption.addEventListener('click', startGame);
+            
+            // Função para iniciar o jogo
+            function startGame() {
+                menuScreen.style.display = 'none';
+                gameContainer.style.display = 'block';
+                document.body.style.overflow = 'auto'; // Restaurar o scroll
+                backgroundMusic.play();
+            }
+            
+            // Iniciar música de fundo
+            backgroundMusic.volume = 0.5;
+            
+            // Adicionar efeito de movimento 3D ao menu baseado na posição do mouse
+            document.addEventListener('mousemove', function(e) {
+                const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                
+                menuOptions.forEach(option => {
+                    if (option.classList.contains('selected')) {
+                        option.style.transform = `translateZ(30px) translateX(10px) rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
+                    } else {
+                        option.style.transform = `rotateY(${xAxis}deg) rotateX(${-yAxis}deg)`;
+                    }
+                });
+                
+                document.querySelector('.menu-title').style.transform = `rotateY(${xAxis/3}deg) rotateX(${-yAxis/3}deg)`;
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>

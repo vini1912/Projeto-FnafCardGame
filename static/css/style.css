@@ -1,0 +1,1560 @@
+/* FNAF Card Battle - Premium CSS
+ * Inspirado nos jogos atuais da franquia Five Nights at Freddy's
+ * Design profissional com microanimações, iluminação e efeitos visuais avançados
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* Sistema de design com variáveis refinadas */
+:root {
+    /* Paleta principal - tons escuros e sutis */
+    --dark-base: #0a0a0f;
+    --dark-surface: #121218;
+    --dark-elevated: #1a1a24;
+    --dark-card: #1e1e2a;
+    --dark-border: #2a2a3a;
+    
+    /* Acentos - usados com moderação */
+    --accent-primary: #5a4b8c;
+    --accent-primary-dark: #3a2e5a;
+    --accent-primary-light: #7a6bac;
+    --accent-secondary: #b71c1c;
+    --accent-secondary-dark: #7f0000;
+    --accent-secondary-light: #f05545;
+    
+    /* Cores de destaque - usadas apenas para elementos importantes */
+    --highlight-gold: #d4af37;
+    --highlight-silver: #c0c0c0;
+    --highlight-blue: #304ffe;
+    
+    /* Cores funcionais */
+    --success: #388e3c;
+    --warning: #f57f17;
+    --danger: #d32f2f;
+    --info: #0288d1;
+    
+    /* Texto */
+    --text-primary: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-disabled: rgba(255, 255, 255, 0.38);
+    --text-hint: rgba(255, 255, 255, 0.5);
+    
+    /* Efeitos */
+    --shadow-ambient: 0 2px 8px rgba(0, 0, 0, 0.5);
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.7);
+    --shadow-sunken: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+    --glow-primary: 0 0 15px rgba(90, 75, 140, 0.5);
+    --glow-secondary: 0 0 15px rgba(183, 28, 28, 0.5);
+    --glow-highlight: 0 0 20px rgba(212, 175, 55, 0.5);
+    
+    /* Animações */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Dimensões */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-width-thin: 1px;
+    --border-width-regular: 2px;
+    --border-width-thick: 3px;
+    
+    /* Z-index layers */
+    --z-background: -1;
+    --z-default: 1;
+    --z-elevated: 10;
+    --z-overlay: 100;
+    --z-modal: 1000;
+    --z-toast: 1500;
+    --z-popup: 2000;
+}
+
+/* Reset e estilos base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background-color: var(--dark-base);
+    background-image: url('/static/images/backgrounds/fundo.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
+    min-height: 100vh;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container principal */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Estilos para a tela de introdução */
+#intro-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: var(--z-popup);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#intro-video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+}
+
+/* Estilos para a tela de menu */
+#menu-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: var(--z-modal);
+    display: none;
+    font-family: 'VT323', monospace;
+    color: white;
+    padding: 50px;
+    background-image: url('/static/images/menu_background.png');
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+.menu-title {
+    font-size: 36px;
+    margin-bottom: 50px;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.menu-option {
+    font-size: 24px;
+    margin: 10px 0;
+    cursor: pointer;
+    text-align: left;
+    transition: color var(--transition-fast);
+}
+
+.menu-option.selected {
+    color: white;
+}
+
+.menu-option.selected::before {
+    content: ">> ";
+}
+
+.menu-option:not(.selected)::before {
+    content: "   ";
+    white-space: pre;
+}
+
+.version {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.author {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* Cabeçalho do jogo */
+.game-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-ambient);
+    border: var(--border-width-thin) solid var(--dark-border);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(90, 75, 140, 0.05), transparent);
+    z-index: var(--z-background);
+}
+
+.game-title {
+    font-family: 'Creepster', cursive;
+    font-size: 3.5rem;
+    margin: 0;
+    color: var(--text-primary);
+    text-shadow: 0 0 10px rgba(90, 75, 140, 0.7), 0 0 20px rgba(90, 75, 140, 0.4);
+    letter-spacing: 2px;
+    position: relative;
+}
+
+.game-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--highlight-gold), transparent);
+}
+
+.game-subtitle {
+    font-size: 1.25rem;
+    margin: 1rem 0 0;
+    color: var(--text-secondary);
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* Área principal do jogo */
+.game-area {
+    position: relative;
+    padding: 1rem;
+}
+
+/* Indicador de dia/noite */
+.day-night-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    background-color: var(--dark-card);
+    border: var(--border-width-thin) solid var(--dark-border);
+    box-shadow: var(--shadow-ambient);
+    z-index: var(--z-elevated);
+    transition: all var(--transition-medium);
+    overflow: hidden;
+}
+
+.day-night-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+}
+
+.day-night-indicator:hover::before {
+    opacity: 1;
+}
+
+.day-indicator {
+    background: linear-gradient(135deg, #ff9800, #f57f17);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+}
+
+.night-indicator {
+    background: linear-gradient(135deg, #303f9f, #1a237e);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(48, 63, 159, 0.5);
+}
+
+/* Tabuleiro do jogo - Layout Versus */
+.game-board {
+    display: grid;
+    /* Define 3 colunas: Oponente (flexível), Mensagens (automático), Jogador (flexível) */
+    grid-template-columns: 1fr auto 1fr; 
+    /* Define 2 linhas: Áreas principais (automático), Controles (automático) */
+    grid-template-rows: auto auto; 
+    /* Mapeia as áreas nomeadas para as células do grid */
+    grid-template-areas:
+        "computer messages player"
+        "controls controls controls";
+    gap: 1.5rem; /* Espaçamento entre as áreas */
+    margin-bottom: 1.5rem;
+    align-items: start; /* Alinha os itens ao topo das suas células */
+}
+
+/* Áreas de jogador e computador - Definem as seções laterais do tabuleiro */
+.computer-area {
+    grid-area: computer; /* Posiciona na área 'computer' do grid */
+    /* Estilos visuais comuns (fundo, blur, borda, sombra, etc.) */
+    background-color: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: var(--shadow-ambient);
+    border: var(--border-width-thin) solid var(--dark-border);
+    overflow: hidden;
+    transition: box-shadow var(--transition-medium), transform var(--transition-medium);
+}
+
+.player-area {
+    grid-area: player; /* Posiciona na área 'player' do grid */
+    /* Estilos visuais comuns (fundo, blur, borda, sombra, etc.) */
+    background-color: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    position: relative;
+    box-shadow: var(--shadow-ambient);
+    border: var(--border-width-thin) solid var(--dark-border);
+    overflow: hidden;
+    transition: box-shadow var(--transition-medium), transform var(--transition-medium);
+}
+
+.computer-area::before, .player-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(90, 75, 140, 0.05), transparent);
+    z-index: var(--z-background);
+}
+
+.computer-area:hover, .player-area:hover {
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-2px);
+}
+
+.area-title {
+    font-family: 'Creepster', cursive;
+    font-size: 2rem;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    text-shadow: 0 0 5px rgba(90, 75, 140, 0.5);
+    position: relative;
+    display: inline-block;
+}
+
+.area-title::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--highlight-gold), transparent);
+}
+
+/* Estatísticas do jogador e computador */
+.player-stats, .computer-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 1.25rem;
+    background-color: rgba(10, 10, 15, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: var(--border-radius-md);
+    padding: 0.75rem;
+    border: var(--border-width-thin) solid var(--dark-border);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    position: relative;
+}
+
+.stat::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--dark-border), transparent);
+}
+
+.stat:last-child::after {
+    display: none;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    transition: color var(--transition-fast);
+}
+
+/* Barras de vida e energia */
+.health-bar, .energy-bar {
+    height: 0.75rem;
+    background-color: rgba(30, 30, 42, 0.7);
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sunken);
+    position: relative;
+}
+
+.health-bar::before, .energy-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--accent-secondary-dark), var(--accent-secondary));
+    border-radius: 2rem;
+    transition: width var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.health-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0) 100%);
+    animation: shimmer 2s infinite;
+}
+
+.energy-fill {
+    height: 100%;
+    background: linear-gradient(to right, #1565c0, #42a5f5);
+    border-radius: 2rem;
+    transition: width var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.energy-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(255, 255, 255, 0) 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Contêineres de cartas */
+.cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    perspective: 1000px;
+}
+
+/* Estilo das cartas */
+.card {
+    width: 220px;
+    background: linear-gradient(135deg, var(--dark-card), var(--dark-elevated));
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-ambient);
+    transition: all var(--transition-medium);
+    border: var(--border-width-thin) solid var(--dark-border);
+    position: relative;
+    transform-style: preserve-3d;
+    transform: translateZ(0);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+}
+
+.card:hover {
+    transform: translateY(-5px) translateZ(10px) rotateX(5deg);
+    box-shadow: var(--shadow-elevated), var(--glow-primary);
+    border-color: var(--accent-primary-light);
+}
+
+.card:hover::after {
+    opacity: 1;
+}
+
+.card.selected {
+    border: var(--border-width-thick) solid var(--highlight-gold);
+    box-shadow: var(--shadow-elevated), var(--glow-highlight);
+    transform: translateY(-8px) translateZ(20px) rotateX(5deg);
+}
+
+.card.selected::before {
+    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+}
+
+.card-header {
+    background: linear-gradient(to right, var(--accent-primary-dark), var(--accent-primary));
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: var(--border-width-thin) solid var(--dark-border);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    pointer-events: none;
+}
+
+.card-name {
+    font-family: 'Creepster', cursive;
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--text-primary);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+}
+
+.card-rarity {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.card-rarity.Rara {
+    background: linear-gradient(135deg, #43a047, #66bb6a);
+    color: white;
+}
+
+.card-rarity.Épica {
+    background: linear-gradient(135deg, #7b1fa2, #9c27b0);
+    color: white;
+}
+
+.card-rarity.Lendária {
+    background: linear-gradient(135deg, #ff8f00, #ffc107);
+    color: #212121;
+}
+
+.card-rarity.Mítica {
+    background: linear-gradient(135deg, #c62828, #f44336);
+    color: white;
+}
+
+.card-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: var(--border-width-thin) solid var(--dark-border);
+    transition: filter var(--transition-medium);
+    position: relative;
+}
+
+.card:hover .card-image {
+    filter: brightness(1.1);
+}
+
+.card-body {
+    padding: 0.75rem;
+    background-color: rgba(30, 30, 42, 0.9);
+    position: relative;
+}
+
+.card-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 0.75rem;
+    background-color: rgba(10, 10, 15, 0.5);
+    border-radius: var(--border-radius-sm);
+    padding: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-stats::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent);
+    pointer-events: none;
+}
+
+.card-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.card-stat::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--dark-border), transparent);
+}
+
+.card-stat:last-child::after {
+    display: none;
+}
+
+.card-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.card-stat-value {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+}
+
+.card-power {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background-color: rgba(10, 10, 15, 0.3);
+    border-radius: var(--border-radius-sm);
+    border-left: 3px solid var(--accent-primary);
+    transition: background-color var(--transition-fast);
+}
+
+.card:hover .card-power {
+    background-color: rgba(10, 10, 15, 0.5);
+}
+
+.card-power-name {
+    font-size: 0.875rem;
+    color: var(--highlight-gold);
+    margin: 0 0 0.25rem 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-power-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Área de mensagens do jogo - Exibe o log de ações e informações */
+.game-messages {
+    grid-area: messages; /* Posiciona na área central 'messages' do grid */
+    background-color: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+    /* Altura máxima para a área de mensagens, com rolagem se necessário */
+    max-height: 400px; 
+    height: 100%; /* Tenta ocupar a altura disponível na célula do grid */
+    overflow-y: auto; /* Habilita rolagem vertical */
+    box-shadow: var(--shadow-ambient);
+    border: var(--border-width-thin) solid var(--dark-border);
+    position: relative;
+    /* Estilização da barra de rolagem (Firefox) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) var(--dark-elevated);
+}
+
+.game-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.game-messages::-webkit-scrollbar-track {
+    background: var(--dark-elevated);
+    border-radius: 3px;
+}
+
+.game-messages::-webkit-scrollbar-thumb {
+    background-color: var(--accent-primary);
+    border-radius: 3px;
+}
+
+.game-messages::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(90, 75, 140, 0.05), transparent);
+    z-index: var(--z-background);
+    pointer-events: none;
+}
+
+.message {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--border-radius-sm);
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    position: relative;
+    overflow: hidden;
+    animation: messageAppear 0.3s ease-out;
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message:last-child {
+    margin-bottom: 0;
+}
+
+.message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+}
+
+.system {
+    background-color: rgba(30, 30, 42, 0.5);
+    color: var(--text-secondary);
+}
+
+.system::before {
+    background-color: var(--accent-primary);
+}
+
+.player {
+    background-color: rgba(58, 46, 90, 0.3);
+    color: var(--text-primary);
+}
+
+.player::before {
+    background-color: var(--accent-primary-light);
+}
+
+.computer {
+    background-color: rgba(183, 28, 28, 0.3);
+    color: var(--text-primary);
+}
+
+.computer::before {
+    background-color: var(--accent-secondary);
+}
+
+.effect {
+    background-color: rgba(212, 175, 55, 0.15);
+    color: var(--highlight-gold);
+}
+
+.effect::before {
+    background-color: var(--highlight-gold);
+}
+
+/* Controles do jogo */
+.game-controls {
+    grid-area: controls;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    /* margin-top: 1.5rem; Removido ou reduzido para mover os controles para cima */
+    margin-top: 0.5rem; /* Reduzido para aproximar os controles */
+    flex-wrap: wrap;
+}
+
+.control-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-family: 'Creepster', cursive;
+    letter-spacing: 1px;
+    transition: all var(--transition-medium);
+    background-color: var(--accent-primary);
+    color: white;
+    box-shadow: var(--shadow-ambient);
+    border: var(--border-width-thin) solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    outline: none;
+}
+
+.control-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+    pointer-events: none;
+}
+
+.control-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0) 100%);
+    transition: left 0.5s ease-in-out;
+    pointer-events: none;
+}
+
+.control-button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated), var(--glow-primary);
+    background-color: var(--accent-primary-light);
+}
+
+.control-button:hover:not(:disabled)::after {
+    left: 100%;
+}
+
+.control-button:active:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-ambient);
+}
+
+.control-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.control-button.attack {
+    background: linear-gradient(to right, var(--accent-secondary-dark), var(--accent-secondary));
+}
+
+.control-button.attack:hover:not(:disabled) {
+    box-shadow: var(--shadow-elevated), var(--glow-secondary);
+}
+
+.control-button.special {
+    background: linear-gradient(to right, #ff8f00, #ffc107);
+    color: #212121;
+}
+
+.control-button.special:hover:not(:disabled) {
+    box-shadow: var(--shadow-elevated), var(--glow-highlight);
+}
+
+/* Modal de regras */
+.rules-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 10, 15, 0.9);
+    z-index: var(--z-modal);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.rules-content {
+    background: linear-gradient(135deg, var(--dark-card), var(--dark-elevated));
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--shadow-elevated), var(--glow-primary);
+    border: var(--border-width-thin) solid var(--dark-border);
+    animation: modalAppear 0.3s ease-out;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) var(--dark-elevated);
+}
+
+.rules-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rules-content::-webkit-scrollbar-track {
+    background: var(--dark-elevated);
+    border-radius: 3px;
+}
+
+.rules-content::-webkit-scrollbar-thumb {
+    background-color: var(--accent-primary);
+    border-radius: 3px;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.close-rules {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.close-rules:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.rules-title {
+    font-family: 'Creepster', cursive;
+    color: var(--highlight-gold);
+    margin-top: 0;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    position: relative;
+}
+
+.rules-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--highlight-gold), transparent);
+}
+
+.rules-text {
+    color: var(--text-secondary);
+    font-family: 'Roboto', sans-serif;
+}
+
+.rules-text h3 {
+    color: var(--text-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    position: relative;
+    display: inline-block;
+}
+
+.rules-text h3::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 30px;
+    height: 2px;
+    background: var(--accent-primary);
+}
+
+.rules-text ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.rules-text li {
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.rules-text li::marker {
+    color: var(--accent-primary);
+}
+
+/* Modal de jumpscare */
+.jumpscare-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: var(--z-popup);
+    justify-content: center;
+    align-items: center;
+}
+
+.jumpscare-image {
+    max-width: 100%;
+    max-height: 100%;
+    animation: jumpscare 0.1s ease-in-out infinite alternate;
+}
+
+@keyframes jumpscare {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05);
+    }
+}
+
+/* Tela de carregamento */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 10, 15, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-overlay);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--highlight-gold);
+    animation: spin 1s ease-in-out infinite;
+    margin: 0 auto 1.5rem;
+    position: relative;
+}
+
+.spinner::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: var(--accent-primary-light);
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-text {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-family: 'Creepster', cursive;
+    letter-spacing: 1px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* Efeitos de hover para elementos interativos */
+.card-power, .stat, .message {
+    transition: transform var(--transition-fast);
+}
+
+.card-power:hover {
+    transform: translateX(3px);
+}
+
+/* Animações para elementos do jogo */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+}
+
+/* Animações para elementos selecionados */
+.card.selected {
+    animation: glow 2s infinite;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .game-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 992px) {
+    html {
+        font-size: 14px;
+    }
+    
+    .card {
+        width: 200px;
+    }
+    
+    .card-image {
+        height: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-board {
+        grid-template-rows: auto auto auto auto;
+    }
+    
+    .card {
+        width: 180px;
+    }
+    
+    .card-image {
+        height: 130px;
+    }
+    
+    .control-button {
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .game-title {
+        font-size: 2.5rem;
+    }
+    
+    .game-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .player-stats, .computer-stats {
+        flex-wrap: wrap;
+    }
+    
+    .stat {
+        flex: 1 0 30%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    html {
+        font-size: 12px;
+    }
+    
+    .card {
+        width: 150px;
+    }
+    
+    .card-image {
+        height: 110px;
+    }
+    
+    .card-name {
+        font-size: 1.1rem;
+    }
+    
+    .card-stat-value {
+        font-size: 1.1rem;
+    }
+    
+    .control-button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        flex: 1 0 40%;
+    }
+    
+    .game-controls {
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 140px;
+    }
+    
+    .card-image {
+        height: 100px;
+    }
+    
+    .cards-container {
+        gap: 0.75rem;
+    }
+    
+    .game-title {
+        font-size: 2rem;
+    }
+}
+
+/* Animações de entrada para elementos principais */
+.game-header, .computer-area, .player-area, .game-messages, .game-controls {
+    animation: slideInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.computer-area {
+    animation-delay: 0.1s;
+}
+
+.game-messages {
+    animation-delay: 0.2s;
+}
+
+.player-area {
+    animation-delay: 0.3s;
+}
+
+.game-controls {
+    animation-delay: 0.4s;
+}
+
+/* Efeitos de glassmorphism para elementos principais */
+.game-header, .computer-area, .player-area, .game-messages, .rules-content {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Efeitos de iluminação ambiente */
+.game-area::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, rgba(90, 75, 140, 0.1), transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Efeitos de hover 3D para cartas */
+.card {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.card:hover {
+    transform: translateY(-5px) rotateX(5deg);
+}
+
+/* Efeitos de texto para elementos importantes */
+.game-title, .area-title {
+    text-shadow: 0 0 10px rgba(90, 75, 140, 0.7);
+}
+
+/* Efeitos de borda para elementos principais */
+.game-header, .computer-area, .player-area, .game-messages {
+    border: var(--border-width-thin) solid var(--dark-border);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeitos de hover para botões */
+.control-button:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-elevated), var(--glow-primary);
+}
+
+/* Efeitos de seleção para cartas */
+.card.selected {
+    border-color: var(--highlight-gold);
+    box-shadow: var(--shadow-elevated), var(--glow-highlight);
+}
+
+/* Efeitos de transição para todos os elementos interativos */
+.card, .control-button, .menu-option, .close-rules {
+    transition: all var(--transition-medium);
+}
+
+/* Efeitos de foco para acessibilidade */
+.control-button:focus, .menu-option:focus, .close-rules:focus {
+    outline: 2px solid var(--accent-primary-light);
+    outline-offset: 2px;
+}
+
+/* Efeitos de hover para elementos de menu */
+.menu-option:hover:not(.selected) {
+    color: var(--highlight-gold);
+}
+
+/* Efeitos de animação para barras de progresso */
+.health-fill, .energy-fill {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeitos de texto para estatísticas */
+.stat-value {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* Efeitos de hover para estatísticas */
+.stat:hover .stat-value {
+    color: var(--highlight-gold);
+}
+
+/* Efeitos de hover para poderes de cartas */
+.card-power:hover .card-power-name {
+    color: var(--text-primary);
+}
+
+/* Efeitos de animação para mensagens */
+.message {
+    animation: messageAppear 0.3s ease-out;
+}
+
+/* Efeitos de animação para modais */
+.rules-content, .jumpscare-image {
+    animation: modalAppear 0.3s ease-out;
+}
+
+/* Efeitos de animação para spinner de carregamento */
+.spinner {
+    animation: spin 1s ease-in-out infinite;
+}
+
+/* Efeitos de animação para texto de carregamento */
+.loading-text {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Efeitos de animação para elementos de jumpscare */
+.jumpscare-image {
+    animation: jumpscare 0.1s ease-in-out infinite alternate;
+}
+
+/* Efeitos de animação para elementos de shimmer */
+.health-fill::after, .energy-fill::after {
+    animation: shimmer 2s infinite;
+}
+
+/* Efeitos de animação para botões */
+.control-button::after {
+    animation: none;
+    transition: left 0.5s ease-in-out;
+}
+
+.control-button:hover::after {
+    left: 100%;
+}
+
+/* Efeitos de animação para cartas selecionadas */
+.card.selected {
+    animation: glow 2s infinite;
+}
+
+/* Efeitos de animação para entrada de elementos principais */
+.game-header, .computer-area, .player-area, .game-messages, .game-controls {
+    animation: slideInUp 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+
+
+/* Estilo específico para rolagem na área de seleção de cartas do jogador */
+.player-area .cards-container {
+    max-height: 400px; /* Altura máxima antes de ativar a rolagem - ajuste conforme necessário */
+    overflow-y: auto; /* Habilita a rolagem vertical quando o conteúdo excede a altura máxima */
+    overflow-x: hidden; /* Esconde a rolagem horizontal */
+    justify-content: center; /* Mantém a centralização ou ajuste para flex-start se preferir alinhado à esquerda */
+    padding-right: 10px; /* Espaço para a barra de rolagem não sobrepor o conteúdo */
+    padding-left: 5px; /* Pequeno ajuste para centralização com a barra de rolagem */
+
+    /* Estilização da barra de rolagem para WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 8px; /* Largura da barra de rolagem */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--dark-elevated); /* Cor do fundo da trilha */
+        border-radius: 4px; /* Bordas arredondadas */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--accent-primary); /* Cor da barra */
+        border-radius: 4px; /* Bordas arredondadas */
+        border: 2px solid var(--dark-elevated); /* Borda para combinar com a trilha */
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: var(--accent-primary-light); /* Cor da barra ao passar o mouse */
+    }
+
+    /* Estilização da barra de rolagem para Firefox */
+    scrollbar-width: thin; /* Define a barra como fina */
+    scrollbar-color: var(--accent-primary) var(--dark-elevated); /* Cor da barra e da trilha */
+}
+
